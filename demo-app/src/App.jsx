@@ -1,34 +1,56 @@
 import React from "react";
 import { lazy, Suspense } from "react";
-import { Redirect, BrowserRouter, Route, Link, Switch } from "react-router-dom";
+import { Redirect, Switch, Route, withRouter } from "react-router";
 import { CommonLayout } from "./components/CommonLayout";
-import {
-  Navbar,
-  Nav,
-  Form,
-  FormControl,
-  Container,
-  Button,
-  Row,
-  Col,
-} from "react-bootstrap";
 const Dashboard = lazy(() => import("./components/Dashboard"));
 const Login = lazy(() => import("./components/Login"));
 
-function App() {
-  return (
-    <BrowserRouter>
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    // Store the previous pathname and search strings
+    this.currentPathname = null;
+    this.currentSearch = null;
+  }
+
+  componentDidMount() {
+    const { history } = this.props;
+
+    history.listen((newLocation, action) => {
+      if (action === "PUSH") {
+        if (
+          newLocation.pathname !== this.currentPathname ||
+          newLocation.search !== this.currentSearch
+        ) {
+          // Save new location
+          this.currentPathname = newLocation.pathname;
+          this.currentSearch = newLocation.search;
+
+          // Clone location object and push it to history
+          history.push({
+            pathname: newLocation.pathname,
+            search: newLocation.search,
+          });
+        }
+      } else {
+        // Send user back if they try to navigate back
+        history.go(1);
+      }
+    });
+  }
+  render() {
+    return (
       <Suspense fallback={<div>Loading...</div>}>
         <Switch>
           <Route exact path="/" component={Login} />
           <RouteWrapper exact path="/Dashboard" component={Dashboard} />
         </Switch>
       </Suspense>
-    </BrowserRouter>
-  );
+    );
+  }
 }
 
-export default App;
+export default withRouter(App);
 
 function RouteWrapper({ component: Component, ...rest }) {
   const isLogin = () => {
@@ -41,7 +63,6 @@ function RouteWrapper({ component: Component, ...rest }) {
         isLogin() ? (
           <CommonLayout>{<Component {...props} />}</CommonLayout>
         ) : (
-          // <React.Fragment>{<Component {...props} />}</React.Fragment>
           <Redirect to="/" component={Login}></Redirect>
         )
       }

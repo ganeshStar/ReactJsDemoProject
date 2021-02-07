@@ -8,7 +8,7 @@ function Company() {
   const [validated, setValidated] = useState(false);
   const [selectedAdmin, setAdmin] = useState(0);
   const [labItems, setLabsItems] = useState([]);
-
+  localStorage.removeItem("islogin");
   const handleSubmit = (event) => {
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
