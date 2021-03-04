@@ -2,20 +2,20 @@ import React from "react";
 import { lazy, Suspense } from "react";
 import { Redirect, Switch, Route, withRouter } from "react-router";
 import { CommonLayout } from "./components/CommonLayout";
+import Features from "./screens/Features";
+import "./App.css";
 const Dashboard = lazy(() => import("./components/Dashboard"));
 const Login = lazy(() => import("./components/Login"));
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-    // Store the previous pathname and search strings
     this.currentPathname = null;
     this.currentSearch = null;
   }
 
   componentDidMount() {
     const { history } = this.props;
-
     history.listen((newLocation, action) => {
       if (action === "PUSH") {
         if (
@@ -43,7 +43,8 @@ class App extends React.Component {
       <Suspense fallback={<div>Loading...</div>}>
         <Switch>
           <Route exact path="/" component={Login} />
-          <RouteWrapper exact path="/Dashboard" component={Dashboard} />
+          <RouteWrapper exact path="/Home" component={Dashboard} />
+          <RouteWrapper exact path="/Features" component={Features} />
         </Switch>
       </Suspense>
     );

@@ -4,24 +4,23 @@ import { useHistory } from "react-router-dom";
 
 function Company() {
   const history = useHistory();
-
-  const [validated, setValidated] = useState(false);
-  const [selectedAdmin, setAdmin] = useState(0);
-  const [labItems, setLabsItems] = useState([]);
+  const [validated, setValidated] = useState(true);
   localStorage.removeItem("islogin");
   const handleSubmit = (event) => {
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
+      setValidated(false);
       event.preventDefault();
       event.stopPropagation();
+    } else {
+      setValidated(true);
+      localStorage.setItem("islogin", true);
+      let path = "Home";
+      history.push(path);
     }
-    setValidated(true);
-    localStorage.setItem("islogin", true);
-    let path = "Dashboard";
-    history.push(path);
   };
   return (
-    <React.Fragment className="text-center">
+    <React.Fragment>
       <br></br>
       <Row className="justify-content-md-center">
         <Col sm={5}>
@@ -31,7 +30,7 @@ function Company() {
             </Card.Header>
             <Card.Body>
               <Card.Title>Login by providing inputs values </Card.Title>
-              <Form noValidate validated={validated} onSubmit={handleSubmit}>
+              <Form noValidate validated={!validated} onSubmit={handleSubmit}>
                 <Form.Group controlId="formGroupEmail">
                   <Form.Label>Email address</Form.Label>
                   <Form.Control
